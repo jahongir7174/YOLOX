@@ -140,7 +140,7 @@ class Head(torch.nn.Module):
         super().__init__()
         self.nc = nc
         self.nl = len(filters)  # number of detection layers
-        self.strides = torch.zeros(self.nl)  # strides computed during build
+        self.stride = torch.zeros(self.nl)  # strides computed during build
 
         self.m = torch.nn.ModuleList()
         self.cls = torch.nn.ModuleList()
@@ -167,7 +167,7 @@ class Head(torch.nn.Module):
 
         n = cls[0].shape[0]
         sizes = [i.shape[2:] for i in cls]
-        anchors = self.__make_anchors(sizes, self.strides, cls[0].device, cls[0].dtype)
+        anchors = self.__make_anchors(sizes, self.stride, cls[0].device, cls[0].dtype)
 
         cls = [i.permute(0, 2, 3, 1).reshape(n, -1, self.nc) for i in cls]
         box = [i.permute(0, 2, 3, 1).reshape(n, -1, 4) for i in box]
@@ -217,8 +217,8 @@ class YOLOX(torch.nn.Module):
         self.head = Head((width[3], width[4], width[5]), num_classes)
 
         img_dummy = torch.zeros(1, width[0], 256, 256)
-        self.head.strides = [256 / x.shape[-2] for x in self.forward(img_dummy)[0]]
-        self.strides = self.head.strides
+        self.head.stride = [256 / x.shape[-2] for x in self.forward(img_dummy)[0]]
+        self.stride = self.head.stride
 
     def forward(self, x):
         x = self.backbone(x)

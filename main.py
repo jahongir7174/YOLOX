@@ -238,7 +238,7 @@ def demo(args):
     import numpy
     model = torch.load(f='./weights/best.pt', map_location='cuda')
     model = model['model'].float()
-    stride = int(max(model.strides))
+    stride = int(max(model.stride))
     model.eval()
 
     nms = util.NMS(conf_threshold=0.4)

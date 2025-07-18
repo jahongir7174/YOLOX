@@ -728,7 +728,7 @@ class ComputeLoss:
 
         self.nc = m.nc
 
-        self.strides = m.strides
+        self.stride = m.stride
 
         self.loss_box = BoxLoss()
         self.loss_bce = torch.nn.BCEWithLogitsLoss(reduction='none')
@@ -741,7 +741,7 @@ class ComputeLoss:
 
         n = outputs[0][0].shape[0]
         sizes = [i.shape[2:] for i in x_cls]
-        anchors = self.__make_anchors(sizes, self.strides, x_cls[0].device, x_cls[0].dtype)
+        anchors = self.__make_anchors(sizes, self.stride, x_cls[0].device, x_cls[0].dtype)
         anchors = torch.cat(anchors).unsqueeze(0).repeat(n, 1, 1)
 
         x_cls = [i.permute(0, 2, 3, 1).reshape(n, -1, self.nc) for i in x_cls]
