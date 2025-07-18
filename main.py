@@ -20,7 +20,7 @@ data_dir = '../Dataset/COCO'
 
 def train(args, params):
     # Model
-    model = nn.build()
+    model = nn.build(len(params['names']))
     model.cuda()
 
     # Optimizer
@@ -325,10 +325,10 @@ def demo(args):
             cv2.waitKey(0)
 
 
-def profile(args):
+def profile(args, params):
     import thop
     shape = (1, 3, args.input_size, args.input_size)
-    model = nn.build().fuse()
+    model = nn.build(params['names']).fuse()
 
     model.eval()
     model(torch.zeros(shape))
@@ -373,7 +373,7 @@ def main():
     util.setup_seed()
     util.setup_multi_processes()
 
-    profile(args)
+    profile(args, params)
 
     if args.train:
         train(args, params)
