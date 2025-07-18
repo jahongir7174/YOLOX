@@ -74,6 +74,8 @@ def train(args, params):
             model.train()
             if args.distributed:
                 sampler.set_epoch(epoch)
+            if args.epochs - epoch == 10:
+                loader.dataset.mosaic = False
 
             p_bar = loader
 
@@ -328,7 +330,7 @@ def demo(args):
 def profile(args, params):
     import thop
     shape = (1, 3, args.input_size, args.input_size)
-    model = nn.build(params['names']).fuse()
+    model = nn.build(len(params['names'])).fuse()
 
     model.eval()
     model(torch.zeros(shape))
