@@ -411,7 +411,7 @@ class Albumentations:
                                                            albumentations.ISONoise(),
                                                            albumentations.RGBShift(),
                                                            albumentations.FancyPCA()],
-                                               p=0.1)]
+                                               p=0.01)]
             self.transform = albumentations.Compose(transforms,
                                                     albumentations.BboxParams('yolo',
                                                                               ['class_labels']))
