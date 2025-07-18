@@ -1,5 +1,6 @@
 import math
 
+import numpy
 import torch
 
 
@@ -154,6 +155,10 @@ class Head(torch.nn.Module):
             self.box.append(torch.nn.Conv2d(filters[i], out_channels=4, kernel_size=1))
             self.obj.append(torch.nn.Conv2d(filters[i], out_channels=1, kernel_size=1))
             self.cls.append(torch.nn.Conv2d(filters[i], out_channels=self.nc, kernel_size=1))
+        for box, cls, obj in zip(self.box, self.cls, self.obj):
+            box.bias.data.fill_(1.0)
+            cls.bias.data.fill_(float(-numpy.log((1 - 0.01) / 0.01)))
+            obj.bias.data.fill_(float(-numpy.log((1 - 0.01) / 0.01)))
 
     def forward(self, x):
         x = [m(i) for i, m in zip(x, self.m)]
@@ -219,6 +224,10 @@ class YOLOX(torch.nn.Module):
         img_dummy = torch.zeros(1, width[0], 256, 256)
         self.head.stride = [256 / x.shape[-2] for x in self.forward(img_dummy)[0]]
         self.stride = self.head.stride
+
+        for m in self.modules():
+            if isinstance(m, torch.nn.Conv2d):
+                torch.nn.init.kaiming_uniform_(m.weight, math.sqrt(5))
 
     def forward(self, x):
         x = self.backbone(x)
